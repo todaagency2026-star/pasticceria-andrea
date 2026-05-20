@@ -1964,6 +1964,21 @@ function submitForm(e, formType) {
 
     console.log('Form data collected, messageDiv found');
 
+    // 🔴 DISABILITA IL PULSANTE IMMEDIATAMENTE per evitare doppi click
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.style.opacity = '0.6';
+        submitButton.style.cursor = 'not-allowed';
+        submitButton.textContent = 'Invio in corso...';
+    }
+
+    // 🟢 MOSTRA MESSAGGIO DI SUCCESSO IMMEDIATAMENTE
+    messageDiv.innerHTML = 'Ordine inviato, Grazie Mille ❤️';
+    messageDiv.classList.add('success');
+    messageDiv.classList.remove('error');
+    messageDiv.style.display = 'block';
+
     // Build complete email content
     let emailContent = `NUOVA PRENOTAZIONE PASTICCERIA ANDREA\n`;
     emailContent += `==========================================\n\n`;
