@@ -1,7 +1,7 @@
 # Configurazione Netlify per Pasticceria Andrea
 
 [build]
-  command = "npm start"
+  command = "echo 'Sito statico - pronto per il deploy!'"
   publish = "."
   functions = "functions"
 
