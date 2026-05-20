@@ -1,0 +1,65 @@
+# Configurazione Netlify per Pasticceria Andrea
+
+[build]
+  command = "npm start"
+  publish = "."
+  functions = "functions"
+
+# Redirect per le pagine legali
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy-policy.html"
+  status = 200
+
+[[redirects]]
+  from = "/termini"
+  to = "/termini-utilizzo.html"
+  status = 200
+
+[[redirects]]
+  from = "/cookie"
+  to = "/cookie-policy.html"
+  status = 200
+
+[[redirects]]
+  from = "/informazioni"
+  to = "/informazioni-legali.html"
+  status = 200
+
+[[redirects]]
+  from = "/recesso"
+  to = "/diritto-recesso.html"
+  status = 200
+
+[[redirects]]
+  from = "/accessibilita"
+  to = "/accessibilita.html"
+  status = 200
+
+# Rewrite per il server email (Netlify Functions)
+[[redirects]]
+  from = "/send-email"
+  to = "/.netlify/functions/send-email"
+  status = 200
+  force = true
+
+# Headers di sicurezza
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Cache policy per gli asset statici
+[[headers]]
+  for = "/*.{js,css,png,jpg,jpeg,gif,svg,woff,woff2}"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
