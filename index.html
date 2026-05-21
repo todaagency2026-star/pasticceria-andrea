@@ -2112,12 +2112,19 @@ function uploadPhotoToImgBB(photoFile, emailContent, formType, form, messageDiv)
 }
 
 function sendEmailViaEmailJSWithPhoto(emailContent, htmlContent, photoBase64, photoFilename, form, messageDiv) {
+    // Raccogli i dati del cliente dal form
+    const formData = new FormData(form);
+    const customer_email = formData.get('email');
+    const customer_name = formData.get('nome');
+
     // Prepare email data with photo attachment
     const emailParams = {
         subject: 'Nuova Prenotazione Pasticceria Andrea',
         html_content: htmlContent || emailContent,
         photo_base64: photoBase64,
-        photo_filename: photoFilename
+        photo_filename: photoFilename,
+        customer_email: customer_email,
+        customer_name: customer_name
     };
 
     console.log('Sending email with photo to local server');
@@ -2169,10 +2176,17 @@ function sendEmailViaEmailJSWithPhoto(emailContent, htmlContent, photoBase64, ph
 }
 
 function sendEmailViaEmailJS(emailContent, htmlContent, form, messageDiv) {
+    // Raccogli i dati del cliente dal form
+    const formData = new FormData(form);
+    const customer_email = formData.get('email');
+    const customer_name = formData.get('nome');
+
     // Prepare email data for local server
     const emailParams = {
         subject: 'Nuova Prenotazione Pasticceria Andrea',
-        html_content: htmlContent || emailContent
+        html_content: htmlContent || emailContent,
+        customer_email: customer_email,
+        customer_name: customer_name
     };
 
     console.log('Sending email to local server:', emailParams);
