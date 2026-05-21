@@ -2027,7 +2027,14 @@ function submitForm(e, formType) {
 
     emailContent += `\nDATA E ORA RITIRO\n`;
     emailContent += `-------------------------------------------\n`;
-    emailContent += `Data Ritiro: ${formData.get('data_ritiro') || '-'}\n`;
+    // Formatta la data da YYYY-MM-DD a DD-MM-YYYY
+    const dataRitiro = formData.get('data_ritiro');
+    let dataFormattata = '-';
+    if(dataRitiro) {
+        const [anno, mese, giorno] = dataRitiro.split('-');
+        dataFormattata = `${giorno}-${mese}-${anno}`;
+    }
+    emailContent += `Data Ritiro: ${dataFormattata}\n`;
     emailContent += `Ora Ritiro: ${formData.get('ora_ritiro') || '-'}\n`;
 
     if(formData.get('note')) {
