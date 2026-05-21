@@ -1381,7 +1381,7 @@ footer{
                         <input type="tel" name="telefono" required>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
+                        <label>Email *</label>
                         <input type="email" name="email" required>
                     </div>
                 </div>
@@ -1491,7 +1491,7 @@ footer{
                         <input type="tel" name="telefono" required>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
+                        <label>Email *</label>
                         <input type="email" name="email" required>
                     </div>
                 </div>
@@ -1548,7 +1548,7 @@ footer{
                         <input type="tel" name="telefono" required>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
+                        <label>Email *</label>
                         <input type="email" name="email" required>
                     </div>
                 </div>
@@ -1605,7 +1605,7 @@ footer{
                         <input type="tel" name="telefono" required>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
+                        <label>Email *</label>
                         <input type="email" name="email" required>
                     </div>
                 </div>
@@ -1958,9 +1958,18 @@ function updateTortaPrice() {
 
 function submitForm(e, formType) {
     console.log('submitForm called with formType:', formType);
-    e.preventDefault();
 
     const form = e.target;
+
+    // 🔴 VERIFICA VALIDITÀ FORM PRIMA DI PROCEDERE
+    if (!form.checkValidity()) {
+        console.log('❌ Form validation failed');
+        // Non chiamare preventDefault per permettere al browser di mostrare i messaggi di validazione
+        return;
+    }
+
+    e.preventDefault();
+
     const formData = new FormData(form);
     const messageDiv = document.getElementById(formType + '-message');
 
