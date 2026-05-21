@@ -1437,6 +1437,125 @@ footer{
                     </div>
                 </div>
 
+                <!-- DECORAZIONI SECTION -->
+                <div class="form-group">
+                    <div style="padding: 16px; background: #fff5f1; border-radius: 8px; border-left: 4px solid #C86450;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" name="torta_decorazioni_aggiungi" id="torta-decorazioni-check" onchange="toggleTortaDecorazioni()">
+                            <span style="font-weight: 600; color: #333;">Aggiungi Decorazioni (€1,50 al kg)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- DECORAZIONI OPTIONS (hidden by default) -->
+                <div id="torta-decorazioni-options" style="display: none; padding: 20px; background: #f9f9f9; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="margin-top: 0; color: #6B5344; font-size: 1.1rem; margin-bottom: 16px;">Scegli le Tue Decorazioni</h3>
+
+                    <!-- NASTRO -->
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+                        <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <input type="checkbox" name="decorazioni_nastro" id="deco-nastro" onchange="toggleNastroColor()">
+                            <span style="font-weight: 500;">🎀 Nastro</span>
+                        </label>
+                        <div id="nastro-color-box" style="display: none; margin-left: 28px; padding: 12px; background: white; border-radius: 6px;">
+                            <label style="display: block; font-size: 0.9rem; margin-bottom: 8px; color: #555;">Colore Nastro:</label>
+                            <input type="text" name="nastro_colore" placeholder="es: Rosso, Azzurro, Oro..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                        </div>
+                    </div>
+
+                    <!-- FIOCCHETTI -->
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+                        <p style="margin: 0 0 12px 0; font-weight: 500; color: #333;">🎀 Fiocchetti</p>
+                        <div style="margin-left: 28px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiocchetto" value="Nero">
+                                <span>Fiocchetto Nero</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiocchetto" value="Rosso">
+                                <span>Fiocchetto Rosso</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiocchetto" value="Rosa">
+                                <span>Fiocchetto Rosa</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiocchetto" value="Azzurro">
+                                <span>Fiocchetto Azzurro</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- MACARON -->
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+                        <p style="margin: 0 0 12px 0; font-weight: 500; color: #333;">🍰 Macaron</p>
+                        <div style="margin-left: 28px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_macaron" value="Rosa">
+                                <span>Macaron Rosa</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_macaron" value="Azzurro">
+                                <span>Macaron Azzurro</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_macaron" value="Giallo">
+                                <span>Macaron Gialli</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_macaron" value="Lilla">
+                                <span>Macaron Lilla</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- PERLE -->
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+                        <p style="margin: 0 0 12px 0; font-weight: 500; color: #333;">✨ Perle</p>
+                        <div style="margin-left: 28px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_perle" value="Oro">
+                                <span>Perle Oro</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_perle" value="Argento">
+                                <span>Perle Argento</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_perle" value="Rosa">
+                                <span>Perle Rosa</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_perle" value="Bianco">
+                                <span>Perle Bianchi</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- FIORI -->
+                    <div style="padding-bottom: 0;">
+                        <p style="margin: 0 0 12px 0; font-weight: 500; color: #333;">🌸 Fiori</p>
+                        <div style="margin-left: 28px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiori" value="Bianchi">
+                                <span>Fiori Bianchi</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiori" value="Azzurri">
+                                <span>Fiori Azzurri</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiori" value="Rosa">
+                                <span>Fiori Rosa</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="decorazioni_fiori" value="Rossi">
+                                <span>Fiori Rossi</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Carica Foto (Tua o Referenza)</label>
                     <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Puoi caricare una tua foto o una foto di referenza come esempio</p>
@@ -1956,6 +2075,39 @@ function updateTortaPrice() {
     }
 }
 
+// Toggle Decorazioni for Torte
+function toggleTortaDecorazioni() {
+    const checkbox = document.getElementById('torta-decorazioni-check');
+    const optionsBox = document.getElementById('torta-decorazioni-options');
+
+    if (checkbox.checked) {
+        optionsBox.style.display = 'block';
+    } else {
+        optionsBox.style.display = 'none';
+        // Pulisci tutti i campi decorazioni se deselezionato
+        document.getElementById('deco-nastro').checked = false;
+        toggleNastroColor();
+        document.querySelectorAll('input[name="decorazioni_fiocchetto"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[name="decorazioni_macaron"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[name="decorazioni_perle"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[name="decorazioni_fiori"]').forEach(cb => cb.checked = false);
+    }
+}
+
+// Toggle Nastro Color Input
+function toggleNastroColor() {
+    const checkbox = document.getElementById('deco-nastro');
+    const colorBox = document.getElementById('nastro-color-box');
+    const colorInput = document.querySelector('input[name="nastro_colore"]');
+
+    if (checkbox.checked) {
+        colorBox.style.display = 'block';
+    } else {
+        colorBox.style.display = 'none';
+        colorInput.value = '';
+    }
+}
+
 function submitForm(e, formType) {
     console.log('submitForm called with formType:', formType);
 
@@ -2002,6 +2154,11 @@ function submitForm(e, formType) {
     form.style.display = 'none';
     messageDiv.style.display = 'block';
 
+    // 🟡 SCROLL AUTOMATICO AL MESSAGGIO DI SUCCESSO
+    setTimeout(() => {
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+
     // Ricarica il sito dopo 3 secondi per tornare alla hero page
     setTimeout(() => {
         location.reload();
@@ -2031,6 +2188,41 @@ function submitForm(e, formType) {
         emailContent += `Dimensioni Torta (Persone o Kg): ${formData.get('torta_dimensioni') || '-'}\n`;
         emailContent += `Colori Preferiti: ${formData.get('torta_colori') || '-'}\n`;
         emailContent += `Scritta Personalizzata: ${formData.get('torta_scritta') || '-'}\n`;
+
+        // Add Decorazioni if selected
+        if(formData.get('torta_decorazioni_aggiungi')) {
+            emailContent += `\nDECORAZIONI (€1,50 al kg)\n`;
+            emailContent += `-------------------------------------------\n`;
+
+            // Nastro
+            if(formData.get('decorazioni_nastro')) {
+                emailContent += `🎀 Nastro - Colore: ${formData.get('nastro_colore') || '-'}\n`;
+            }
+
+            // Fiocchetti
+            const fiocchetti = formData.getAll('decorazioni_fiocchetto');
+            if(fiocchetti.length > 0) {
+                emailContent += `🎀 Fiocchetti: ${fiocchetti.join(', ')}\n`;
+            }
+
+            // Macaron
+            const macaron = formData.getAll('decorazioni_macaron');
+            if(macaron.length > 0) {
+                emailContent += `🍰 Macaron: ${macaron.join(', ')}\n`;
+            }
+
+            // Perle
+            const perle = formData.getAll('decorazioni_perle');
+            if(perle.length > 0) {
+                emailContent += `✨ Perle: ${perle.join(', ')}\n`;
+            }
+
+            // Fiori
+            const fiori = formData.getAll('decorazioni_fiori');
+            if(fiori.length > 0) {
+                emailContent += `🌸 Fiori: ${fiori.join(', ')}\n`;
+            }
+        }
     } else if(formType === 'pasticcini') {
         emailContent += `DETTAGLI ORDINE\n`;
         emailContent += `-------------------------------------------\n`;
