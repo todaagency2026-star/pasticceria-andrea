@@ -1980,11 +1980,23 @@ function submitForm(e, formType) {
         submitButton.textContent = 'Invio in corso...';
     }
 
-    // 🟢 MOSTRA MESSAGGIO DI SUCCESSO IMMEDIATAMENTE
+    // 🟢 MOSTRA MESSAGGIO DI SUCCESSO IMMEDIATAMENTE E NASCONDE IL MODULO
     messageDiv.innerHTML = 'Ordine inviato, Grazie Mille ❤️';
     messageDiv.classList.add('success');
     messageDiv.classList.remove('error');
+
+    // Sposta il messageDiv fuori dal form per renderlo visibile
+    const formParent = form.parentElement;
+    if (messageDiv.parentElement !== formParent) {
+        formParent.insertBefore(messageDiv, form.nextSibling);
+    }
+    form.style.display = 'none';
     messageDiv.style.display = 'block';
+
+    // Ricarica il sito dopo 3 secondi per tornare alla hero page
+    setTimeout(() => {
+        location.reload();
+    }, 3000);
 
     // Build complete email content
     let emailContent = `NUOVA PRENOTAZIONE PASTICCERIA ANDREA\n`;
@@ -2146,39 +2158,13 @@ function sendEmailViaEmailJSWithPhoto(emailContent, htmlContent, photoBase64, ph
     })
         .then(response => response.json())
         .then(data => {
-            console.log('Email sent successfully:', data);
-            messageDiv.innerHTML = 'Ordine inviato, Grazie Mille ❤️';
-            messageDiv.classList.add('success');
-            messageDiv.classList.remove('error');
+            console.log('✅ Email sent successfully:', data);
             form.reset();
-            // Sposta il messageDiv fuori dal form per renderlo visibile
-            const formParent = form.parentElement;
-            formParent.insertBefore(messageDiv, form.nextSibling);
-            form.style.display = 'none';
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-                form.style.display = 'block';
-                // Rimetti il messageDiv dentro il form
-                form.insertBefore(messageDiv, form.firstChild);
-            }, 7000);
         })
         .catch(error => {
-            console.error('Email error:', error);
-            messageDiv.innerHTML = 'Ordine inviato, Grazie Mille ❤️';
-            messageDiv.classList.add('success');
-            form.reset();
-            // Sposta il messageDiv fuori dal form per renderlo visibile
-            const formParent = form.parentElement;
-            formParent.insertBefore(messageDiv, form.nextSibling);
-            form.style.display = 'none';
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-                form.style.display = 'block';
-                // Rimetti il messageDiv dentro il form
-                form.insertBefore(messageDiv, form.firstChild);
-            }, 7000);
+            console.error('❌ Email error:', error);
+            // L'email non è arrivata, ma il messaggio è già visibile
+            // e il sito si ricaricherà comunque dopo 3 secondi
         });
 }
 
@@ -2208,39 +2194,13 @@ function sendEmailViaEmailJS(emailContent, htmlContent, form, messageDiv) {
     })
         .then(response => response.json())
         .then(data => {
-            console.log('Email sent successfully:', data);
-            messageDiv.innerHTML = 'Ordine inviato, Grazie Mille ❤️';
-            messageDiv.classList.add('success');
-            messageDiv.classList.remove('error');
+            console.log('✅ Email sent successfully:', data);
             form.reset();
-            // Sposta il messageDiv fuori dal form per renderlo visibile
-            const formParent = form.parentElement;
-            formParent.insertBefore(messageDiv, form.nextSibling);
-            form.style.display = 'none';
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-                form.style.display = 'block';
-                // Rimetti il messageDiv dentro il form
-                form.insertBefore(messageDiv, form.firstChild);
-            }, 7000);
         })
         .catch(error => {
-            console.error('Email error:', error);
-            messageDiv.innerHTML = 'Ordine inviato, Grazie Mille ❤️';
-            messageDiv.classList.add('success');
-            form.reset();
-            // Sposta il messageDiv fuori dal form per renderlo visibile
-            const formParent = form.parentElement;
-            formParent.insertBefore(messageDiv, form.nextSibling);
-            form.style.display = 'none';
-            messageDiv.style.display = 'block';
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-                form.style.display = 'block';
-                // Rimetti il messageDiv dentro il form
-                form.insertBefore(messageDiv, form.firstChild);
-            }, 7000);
+            console.error('❌ Email error:', error);
+            // L'email non è arrivata, ma il messaggio è già visibile
+            // e il sito si ricaricherà comunque dopo 3 secondi
         });
 }
 
