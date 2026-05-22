@@ -2143,6 +2143,9 @@ function switchTab(tabName) {
 
     // Activate selected tab
     event.target.classList.add('active');
+
+    // Pre-riempi i campi del cliente se è il primo ordine già completato
+    prefillCustomerFields(tabName);
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -2676,6 +2679,40 @@ document.querySelectorAll('.mob a').forEach(link => {
    CART SYSTEM
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 let cart = [];
+let customerData = null; // Memorizza i dati del cliente dal primo ordine
+
+// Funzione per salvare i dati del cliente dal primo ordine
+function saveCustomerData(formFields) {
+    if (!customerData) {
+        customerData = {
+            nome: formFields.nome || '',
+            cognome: formFields.cognome || '',
+            telefono: formFields.telefono || '',
+            email: formFields.email || ''
+        };
+        console.log('💾 Dati cliente salvati:', customerData);
+    }
+}
+
+// Funzione per pre-riempire i campi dei form successivi
+function prefillCustomerFields(formType) {
+    if (customerData && cart.length > 0) {
+        const form = document.getElementById(formType + '-form');
+        if (form) {
+            const nomeInput = form.querySelector('input[name="nome"]');
+            const cognomeInput = form.querySelector('input[name="cognome"]');
+            const telefonoInput = form.querySelector('input[name="telefono"]');
+            const emailInput = form.querySelector('input[name="email"]');
+
+            if (nomeInput) nomeInput.value = customerData.nome;
+            if (cognomeInput) cognomeInput.value = customerData.cognome;
+            if (telefonoInput) telefonoInput.value = customerData.telefono;
+            if (emailInput) emailInput.value = customerData.email;
+
+            console.log('✅ Campi pre-riempiti con i dati del cliente');
+        }
+    }
+}
 
 function addToCart(event, formType) {
     event.preventDefault();
@@ -2723,6 +2760,11 @@ function addToCart(event, formType) {
     // Add to cart
     cart.push(productData);
     console.log('✅ Prodotto aggiunto al carrello:', formType, allFormFields);
+
+    // Se è il primo ordine, salva i dati del cliente
+    if (cart.length === 1) {
+        saveCustomerData(allFormFields);
+    }
 
     // Show success message
     const messageDiv = document.getElementById(formType + '-message');
