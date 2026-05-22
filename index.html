@@ -2690,27 +2690,54 @@ function saveCustomerData(formFields) {
             telefono: formFields.telefono || '',
             email: formFields.email || ''
         };
-        console.log('💾 Dati cliente salvati:', customerData);
+        console.log('💾 Dati cliente SALVATI:', customerData);
+        console.log('📝 Nome:', customerData.nome, '| Cognome:', customerData.cognome, '| Tel:', customerData.telefono, '| Email:', customerData.email);
+    } else {
+        console.log('⚠️ Dati cliente già salvati, non sovrascrivo');
     }
 }
 
 // Funzione per pre-riempire i campi dei form successivi
 function prefillCustomerFields(formType) {
-    if (customerData && cart.length > 0) {
+    console.log('🔄 Tentativo pre-riempimento form:', formType);
+    console.log('   customerData:', customerData);
+    console.log('   cart.length:', cart.length);
+
+    if (customerData) {
         const form = document.getElementById(formType + '-form');
+        console.log('   Form trovato:', !!form);
+
         if (form) {
             const nomeInput = form.querySelector('input[name="nome"]');
             const cognomeInput = form.querySelector('input[name="cognome"]');
             const telefonoInput = form.querySelector('input[name="telefono"]');
             const emailInput = form.querySelector('input[name="email"]');
 
-            if (nomeInput) nomeInput.value = customerData.nome;
-            if (cognomeInput) cognomeInput.value = customerData.cognome;
-            if (telefonoInput) telefonoInput.value = customerData.telefono;
-            if (emailInput) emailInput.value = customerData.email;
+            console.log('   Input trovati - Nome:', !!nomeInput, 'Cognome:', !!cognomeInput, 'Tel:', !!telefonoInput, 'Email:', !!emailInput);
+
+            if (nomeInput) {
+                nomeInput.value = customerData.nome;
+                console.log('   ✅ Nome pre-riempito:', customerData.nome);
+            }
+            if (cognomeInput) {
+                cognomeInput.value = customerData.cognome;
+                console.log('   ✅ Cognome pre-riempito:', customerData.cognome);
+            }
+            if (telefonoInput) {
+                telefonoInput.value = customerData.telefono;
+                console.log('   ✅ Telefono pre-riempito:', customerData.telefono);
+            }
+            if (emailInput) {
+                emailInput.value = customerData.email;
+                console.log('   ✅ Email pre-riempita:', customerData.email);
+            }
 
             console.log('✅ Campi pre-riempiti con i dati del cliente');
+        } else {
+            console.log('❌ Form NON trovato con ID:', formType + '-form');
         }
+    } else {
+        console.log('❌ customerData è NULL - nessun ordine precedente');
     }
 }
 
