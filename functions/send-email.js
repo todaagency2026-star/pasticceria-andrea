@@ -110,20 +110,27 @@ exports.handler = async (event, context) => {
             `;
 
         // 1️⃣ INVIA EMAIL ALLA PASTICCERIA
-        const info = await transporter.sendMail({
-            from: 'Pasticceria Andrea <andrea.panbar@gmail.com>',
-            to: 'andrea.panbar@gmail.com',
-            subject: subject,
-            text: html_content.replace(/<[^>]*>/g, ''),
-            html: emailHTML,
-            replyTo: 'andrea.panbar@gmail.com',
-            attachments: attachments
-        });
-
-        console.log('✅ Email inviata alla pasticceria:', info.messageId);
+        console.log('📧 Tentativo di invio email alla pasticceria...');
+        let info;
+        try {
+            info = await transporter.sendMail({
+                from: 'Pasticceria Andrea <andrea.panbar@gmail.com>',
+                to: 'andrea.panbar@gmail.com',
+                subject: subject,
+                text: html_content.replace(/<[^>]*>/g, ''),
+                html: emailHTML,
+                replyTo: 'andrea.panbar@gmail.com',
+                attachments: attachments
+            });
+            console.log('✅ Email inviata alla pasticceria:', info.messageId);
+        } catch(emailError) {
+            console.error('❌ Errore nell\'invio email alla pasticceria:', emailError.message);
+            throw new Error(`Impossibile inviare email a pasticceria: ${emailError.message}`);
+        }
 
         // 2️⃣ INVIA EMAIL DI CONFERMA AL CLIENTE (se email è disponibile)
         if (customer_email) {
+            console.log('📧 Tentativo di invio email di conferma al cliente:', customer_email);
             const confirmationHTML = `
             <!DOCTYPE html>
             <html>
@@ -166,16 +173,20 @@ exports.handler = async (event, context) => {
             </html>
             `;
 
-            await transporter.sendMail({
-                from: 'Pasticceria Andrea <andrea.panbar@gmail.com>',
-                to: customer_email,
-                subject: '✅ Ordine Confermato - Pasticceria Andrea',
-                text: `Grazie ${customer_name || 'Cliente'}! Il tuo ordine è stato ricevuto correttamente.`,
-                html: confirmationHTML,
-                replyTo: 'andrea.panbar@gmail.com'
-            });
-
-            console.log('✅ Email di conferma inviata al cliente:', customer_email);
+            try {
+                await transporter.sendMail({
+                    from: 'Pasticceria Andrea <andrea.panbar@gmail.com>',
+                    to: customer_email,
+                    subject: '✅ Ordine Confermato - Pasticceria Andrea',
+                    text: `Grazie ${customer_name || 'Cliente'}! Il tuo ordine è stato ricevuto correttamente.`,
+                    html: confirmationHTML,
+                    replyTo: 'andrea.panbar@gmail.com'
+                });
+                console.log('✅ Email di conferma inviata al cliente:', customer_email);
+            } catch(confirmError) {
+                console.error('⚠️ Errore nell\'invio email di conferma (continuiamo comunque):', confirmError.message);
+                // Non throwamo l'errore perché l'ordine è già stato registrato
+            }
         }
 
         return {
@@ -190,10 +201,18 @@ exports.handler = async (event, context) => {
 
     } catch (error) {
         console.error('❌ Errore:', error);
+        console.error('   Nome errore:', error.name);
+        console.error('   Messaggio:', error.message);
+        console.error('   Stack:', error.stack);
+
         return {
             statusCode: 500,
             headers: { 'Access-Control-Allow-Origin': '*' },
-            body: JSON.stringify({ error: error.message })
+            body: JSON.stringify({
+                error: error.message,
+                errorName: error.name,
+                errorDetails: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            })
         };
     }
 };
