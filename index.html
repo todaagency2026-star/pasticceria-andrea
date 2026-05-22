@@ -1350,6 +1350,18 @@ footer{
         <h2 class="section-h">Prenotazione</h2>
 
         <div class="booking-container">
+            <!-- CARRELLO SECTION -->
+            <div id="cart-section" style="display: none; margin-bottom: 40px; padding: 20px; background: #fff5f1; border-radius: 12px; border: 2px solid #C86450;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #6B5344; margin: 0;">🛒 Il tuo Carrello</h3>
+                    <span id="cart-count" style="background: #C86450; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">0 prodotti</span>
+                </div>
+                <div id="cart-items" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;"></div>
+                <button type="button" id="cart-submit-btn" class="form-submit" onclick="submitFullCart()" style="display: none; width: 100%; background: #6B5344; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all .3s;">
+                    ✅ Invia Ordine Completo
+                </button>
+            </div>
+
             <div class="booking-tabs">
                 <button class="booking-tab active" onclick="switchTab('torte')">Torte Personalizzate</button>
                 <button class="booking-tab" onclick="switchTab('pasticcini')">Pasticcini</button>
@@ -1586,7 +1598,9 @@ footer{
                     <textarea name="allergie" placeholder="Segnala allergie o intolleranze (es: noci, glutine, lattosio...)" required></textarea>
                 </div>
 
-                <button type="submit" class="form-submit">Invia Prenotazione</button>
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="form-submit" style="flex: 1; background: #A0897B;" onclick="addToCart(event, 'torte')">🛒 Aggiungi al Carrello</button>
+                </div>
             </form>
 
             <!-- PASTICCINI FORM -->
@@ -1643,7 +1657,9 @@ footer{
                     <textarea name="allergie" placeholder="Segnala allergie o intolleranze (es: noci, glutine, lattosio...)" required></textarea>
                 </div>
 
-                <button type="submit" class="form-submit">Invia Ordine</button>
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="form-submit" style="flex: 1; background: #A0897B;" onclick="addToCart(event, 'pasticcini')">🛒 Aggiungi al Carrello</button>
+                </div>
             </form>
 
             <!-- PIZZE FORM -->
@@ -1672,17 +1688,55 @@ footer{
                     </div>
                 </div>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Quantità  (Pezzi) *</label>
-                        <input type="number" name="quantita" min="1" required placeholder="5">
+                <!-- PIZZE SELECTION -->
+                <div class="form-group">
+                    <label style="font-weight: 600; display: block; margin-bottom: 15px; color: #333;">Scegli * (uno o più)</label>
+
+                    <!-- Focaccine -->
+                    <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #C86450;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" name="pizze_tipo" value="Focaccine monoporzione miste € 0,50 cad" onchange="togglePizzaQuantity(this)">
+                            <span style="flex: 1;">Focaccine monoporzione miste <strong>€ 0,50 cad</strong></span>
+                        </label>
+                        <div id="qty-focaccine" style="display: none; margin-top: 10px; padding-left: 30px;">
+                            <input type="number" name="qty_focaccine" min="1" placeholder="Quantità (cad)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+
+                    <!-- Teglia Focaccia -->
+                    <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #C86450;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" name="pizze_tipo" value="Teglia Focaccia € 13,00" onchange="togglePizzaQuantity(this)">
+                            <span style="flex: 1;">Teglia Focaccia <strong>€ 13,00</strong></span>
+                        </label>
+                        <div id="qty-focaccia" style="display: none; margin-top: 10px; padding-left: 30px;">
+                            <input type="number" name="qty_focaccia" min="1" placeholder="Quantità (Teglie)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+
+                    <!-- Teglia Margherita -->
+                    <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #C86450;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" name="pizze_tipo" value="Teglia Margherita € 18,00" onchange="togglePizzaQuantity(this)">
+                            <span style="flex: 1;">Teglia Margherita <strong>€ 18,00</strong></span>
+                        </label>
+                        <div id="qty-margherita" style="display: none; margin-top: 10px; padding-left: 30px;">
+                            <input type="number" name="qty_margherita" min="1" placeholder="Quantità (Teglie)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+
+                    <!-- Panini al latte -->
+                    <div style="padding: 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #C86450;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" name="pizze_tipo" value="Panini al latte farciti salumi misti € 20,00 al kg" onchange="togglePizzaQuantity(this)">
+                            <span style="flex: 1;">Panini al latte farciti salumi misti <strong>€ 20,00 al kg</strong></span>
+                        </label>
+                        <div id="qty-panini" style="display: none; margin-top: 10px; padding-left: 30px;">
+                            <input type="number" name="qty_panini" min="0.1" step="0.1" placeholder="Quantità (kg)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Descrizione Ordine *</label>
-                    <textarea name="descrizione" required placeholder="es: 3 Margherita, 2 Diavola, ecc."></textarea>
-                </div>
 
                 <div class="form-grid">
                     <div class="form-group">
@@ -1700,7 +1754,9 @@ footer{
                     <textarea name="allergie" placeholder="Segnala allergie o intolleranze (es: noci, glutine, lattosio...)" required></textarea>
                 </div>
 
-                <button type="submit" class="form-submit">Invia Ordine</button>
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="form-submit" style="flex: 1; background: #A0897B;" onclick="addToCart(event, 'pizze')">🛒 Aggiungi al Carrello</button>
+                </div>
             </form>
 
             <!-- BRIOCHE FORM -->
@@ -1764,7 +1820,9 @@ footer{
                     <textarea name="allergie" placeholder="Segnala allergie o intolleranze (es: noci, glutine, lattosio...)" required></textarea>
                 </div>
 
-                <button type="submit" class="form-submit">Invia Ordine</button>
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="form-submit" style="flex: 1; background: #A0897B;" onclick="addToCart(event, 'brioche')">🛒 Aggiungi al Carrello</button>
+                </div>
             </form>
 
             <!-- PANE FORM -->
@@ -1827,7 +1885,9 @@ footer{
                     <textarea name="allergie" placeholder="Segnala allergie o intolleranze (es: noci, glutine, lattosio...)" required></textarea>
                 </div>
 
-                <button type="submit" class="form-submit">Invia Ordine</button>
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="form-submit" style="flex: 1; background: #A0897B;" onclick="addToCart(event, 'pane')">🛒 Aggiungi al Carrello</button>
+                </div>
             </form>
 
             <!-- PANETTONI FORM -->
@@ -2108,6 +2168,37 @@ function toggleNastroColor() {
     }
 }
 
+// Toggle Pizza Quantity Input
+function togglePizzaQuantity(checkbox) {
+    const value = checkbox.value;
+    let quantityId = '';
+
+    if (value.includes('Focaccine')) {
+        quantityId = 'qty-focaccine';
+    } else if (value.includes('Teglia Focaccia')) {
+        quantityId = 'qty-focaccia';
+    } else if (value.includes('Teglia Margherita')) {
+        quantityId = 'qty-margherita';
+    } else if (value.includes('Panini')) {
+        quantityId = 'qty-panini';
+    }
+
+    const quantityDiv = document.getElementById(quantityId);
+    if (quantityDiv) {
+        if (checkbox.checked) {
+            quantityDiv.style.display = 'block';
+            // Rendi il campo obbligatorio
+            quantityDiv.querySelector('input').required = true;
+        } else {
+            quantityDiv.style.display = 'none';
+            // Rimuovi l'obbligo e svuota il campo
+            const input = quantityDiv.querySelector('input');
+            input.required = false;
+            input.value = '';
+        }
+    }
+}
+
 function submitForm(e, formType) {
     console.log('submitForm called with formType:', formType);
 
@@ -2186,8 +2277,14 @@ function submitForm(e, formType) {
         }
         emailContent += `Decorazione Frutta: ${formData.get('torta_decorazione') || '-'}\n`;
         emailContent += `Dimensioni Torta (Persone o Kg): ${formData.get('torta_dimensioni') || '-'}\n`;
-        emailContent += `Colori Preferiti: ${formData.get('torta_colori') || '-'}\n`;
-        emailContent += `Scritta Personalizzata: ${formData.get('torta_scritta') || '-'}\n`;
+        const coloriValue = formData.get('torta_colori');
+        if(coloriValue) {
+            emailContent += `Colori Preferiti: ${coloriValue}\n`;
+        }
+        const scrittaValue = formData.get('torta_scritta');
+        if(scrittaValue) {
+            emailContent += `Scritta Personalizzata: ${scrittaValue}\n`;
+        }
 
         // Add Decorazioni if selected
         if(formData.get('torta_decorazioni_aggiungi')) {
@@ -2196,7 +2293,10 @@ function submitForm(e, formType) {
 
             // Nastro
             if(formData.get('decorazioni_nastro')) {
-                emailContent += `🎀 Nastro - Colore: ${formData.get('nastro_colore') || '-'}\n`;
+                const nastroColore = formData.get('nastro_colore');
+                if(nastroColore) {
+                    emailContent += `🎀 Nastro - Colore: ${nastroColore}\n`;
+                }
             }
 
             // Fiocchetti
@@ -2534,6 +2634,377 @@ document.querySelectorAll('.mob a').forEach(link => {
         document.querySelector('.mob').classList.remove('open');
     });
 });
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   CART SYSTEM
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+let cart = [];
+
+function addToCart(event, formType) {
+    event.preventDefault();
+
+    // Find the form for this product type
+    const form = document.getElementById(formType + '-form');
+
+    // Validate form
+    if (!form.checkValidity()) {
+        console.log('❌ Form validation failed');
+        return;
+    }
+
+    // Collect ALL form data
+    const formData = new FormData(form);
+    const allFormFields = {};
+    let photoFile = null;
+
+    // Salva TUTTI i campi del form e gestisci le foto
+    for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+            // Se è un file (foto), salvalo separatamente
+            photoFile = value;
+            console.log('📸 Foto trovata:', value.name);
+        } else {
+            if (allFormFields[key]) {
+                // Se è un array (multiple checkboxes), aggiungi all'array
+                if (!Array.isArray(allFormFields[key])) {
+                    allFormFields[key] = [allFormFields[key]];
+                }
+                allFormFields[key].push(value);
+            } else {
+                allFormFields[key] = value;
+            }
+        }
+    }
+
+    const productData = {
+        id: Date.now(),
+        type: formType,
+        formFields: allFormFields, // Salva TUTTI i campi
+        photoFile: photoFile // Salva il file della foto
+    };
+
+    // Add to cart
+    cart.push(productData);
+    console.log('✅ Prodotto aggiunto al carrello:', formType, allFormFields);
+
+    // Show success message
+    const messageDiv = document.getElementById(formType + '-message');
+    if (messageDiv) {
+        messageDiv.innerHTML = '✅ Aggiunto al Carrello!';
+        messageDiv.classList.add('success');
+        messageDiv.classList.remove('error');
+        messageDiv.style.display = 'block';
+
+        // Hide message after 2 seconds
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 2000);
+    }
+
+    // Reset form
+    form.reset();
+
+    // Update cart UI
+    updateCartUI();
+
+    // Scroll to cart
+    setTimeout(() => {
+        document.getElementById('cart-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    console.log('🗑️ Prodotto rimosso dal carrello');
+    updateCartUI();
+}
+
+function updateCartUI() {
+    const cartSection = document.getElementById('cart-section');
+    const cartItems = document.getElementById('cart-items');
+    const cartCount = document.getElementById('cart-count');
+    const cartSubmitBtn = document.getElementById('cart-submit-btn');
+
+    if (cart.length === 0) {
+        // Hide cart if empty
+        cartSection.style.display = 'none';
+        cartItems.innerHTML = '';
+        return;
+    }
+
+    // Show cart
+    cartSection.style.display = 'block';
+
+    // Update count
+    const plurale = cart.length === 1 ? 'prodotto' : 'prodotti';
+    cartCount.textContent = `${cart.length} ${plurale}`;
+
+    // Build cart items HTML
+    let cartHTML = '';
+    cart.forEach((item, index) => {
+        const typeLabels = {
+            torte: '🍰 Torta Personalizzata',
+            pasticcini: '🍪 Pasticcini',
+            pizze: '🍕 Pizze',
+            brioche: '🥐 Brioches',
+            pane: '🍞 Pane'
+        };
+
+        const typeLabel = typeLabels[item.type] || item.type;
+        const f = item.formFields;
+
+        // Costruisci un riepilogo dei dettagli
+        let dettagli = '';
+        if(item.type === 'torte' && f.torta_tipo) dettagli = f.torta_tipo;
+        else if(item.type === 'pasticcini' && f.quantita) dettagli = `${f.quantita} pezzi`;
+        else if(item.type === 'pizze' && f.quantita) dettagli = `${f.quantita} pezzi`;
+        else if(item.type === 'brioche' && f.brioche_tipo) dettagli = f.brioche_tipo;
+        else if(item.type === 'pane' && f.pane_tipo) dettagli = f.pane_tipo;
+
+        cartHTML += `
+            <div style="padding: 12px; background: white; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #C86450;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333;">${typeLabel}</div>
+                        <div style="font-size: 0.85rem; color: #999;">${f.nome || '-'} ${f.cognome || '-'}</div>
+                        ${dettagli ? `<div style="font-size: 0.8rem; color: #666; margin-top: 4px;">📋 ${dettagli}</div>` : ''}
+                    </div>
+                    <button type="button" onclick="removeFromCart(${index})" style="background: #ff6b6b; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; white-space: nowrap;">✖️</button>
+                </div>
+            </div>
+        `;
+    });
+
+    cartItems.innerHTML = cartHTML;
+
+    // Show submit button
+    cartSubmitBtn.style.display = 'block';
+}
+
+function submitFullCart() {
+    if (cart.length === 0) {
+        alert('Il carrello è vuoto!');
+        return;
+    }
+
+    // 🔴 DISABILITA IL BOTTONE IMMEDIATAMENTE
+    const submitBtn = document.getElementById('cart-submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.6';
+    submitBtn.style.cursor = 'not-allowed';
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '⏳ Invio in corso...';
+
+    console.log('📦 Invio ordine completo con', cart.length, 'prodotti');
+
+    // Get customer data from first item
+    const firstItem = cart[0];
+    const fields = firstItem.formFields;
+
+    // Controlla se c'è una foto nel carrello
+    let hasPhoto = false;
+    let photoFile = null;
+    for (let item of cart) {
+        if (item.photoFile) {
+            photoFile = item.photoFile;
+            hasPhoto = true;
+            console.log('📸 Foto trovata nel carrello:', photoFile.name);
+            break;
+        }
+    }
+
+    // Se c'è una foto, convertila a base64
+    if (hasPhoto && photoFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result;
+            buildAndSendCartEmail(base64Data, photoFile.name, submitBtn, originalText);
+        };
+        reader.readAsDataURL(photoFile);
+    } else {
+        // Se non c'è foto, invia direttamente
+        buildAndSendCartEmail(null, null, submitBtn, originalText);
+    }
+}
+
+function buildAndSendCartEmail(photoBase64, photoFilename, submitBtn, originalText) {
+    // Build combined email content
+    let emailContent = `NUOVA PRENOTAZIONE MULTIPLA PASTICCERIA ANDREA\n`;
+    emailContent += `==========================================\n\n`;
+    emailContent += `NUMERO ORDINI TOTALI: ${cart.length}\n\n`;
+
+    // Get customer data from first item
+    const firstItem = cart[0];
+    const fields = firstItem.formFields;
+
+    emailContent += `DATI CLIENTE\n`;
+    emailContent += `-------------------------------------------\n`;
+    emailContent += `Nome: ${fields.nome || '-'}\n`;
+    emailContent += `Cognome: ${fields.cognome || '-'}\n`;
+    emailContent += `Telefono: ${fields.telefono || '-'}\n`;
+    emailContent += `Email: ${fields.email || '-'}\n\n`;
+
+    // Add each product
+    const typeLabels = {
+        torte: 'TORTA PERSONALIZZATA',
+        pasticcini: 'PASTICCINI',
+        pizze: 'PIZZE',
+        brioche: 'BRIOCHES',
+        pane: 'PANE'
+    };
+
+    cart.forEach((item, index) => {
+        const typeLabel = typeLabels[item.type] || item.type.toUpperCase();
+        emailContent += `✓ ORDINE ${index + 1}: ${typeLabel}\n`;
+        emailContent += `-------------------------------------------\n`;
+
+        const f = item.formFields; // Dati salvati al momento dell'aggiunta
+
+        if (item.type === 'torte') {
+            emailContent += `Tipo di Torta: ${f.torta_tipo || '-'}\n`;
+            if(f.torta_gusto) emailContent += `Gusto a Scelta: ${f.torta_gusto}\n`;
+            emailContent += `Decorazione Frutta: ${f.torta_decorazione || '-'}\n`;
+            emailContent += `Dimensioni Torta (Persone o Kg): ${f.torta_dimensioni || '-'}\n`;
+            if(f.torta_colori) emailContent += `Colori Preferiti: ${f.torta_colori}\n`;
+            if(f.torta_scritta) emailContent += `Scritta Personalizzata: ${f.torta_scritta}\n`;
+
+            // Decorazioni if present
+            if(f.torta_decorazioni_aggiungi) {
+                emailContent += `\nDECORAZIONI (€1,50 al kg)\n`;
+                if(f.decorazioni_nastro && f.nastro_colore) emailContent += `🎀 Nastro - Colore: ${f.nastro_colore}\n`;
+                if(f.decorazioni_fiocchetto) {
+                    const fiocchetti = Array.isArray(f.decorazioni_fiocchetto) ? f.decorazioni_fiocchetto : [f.decorazioni_fiocchetto];
+                    emailContent += `🎀 Fiocchetti: ${fiocchetti.join(', ')}\n`;
+                }
+                if(f.decorazioni_macaron) {
+                    const macaron = Array.isArray(f.decorazioni_macaron) ? f.decorazioni_macaron : [f.decorazioni_macaron];
+                    emailContent += `🍰 Macaron: ${macaron.join(', ')}\n`;
+                }
+                if(f.decorazioni_perle) {
+                    const perle = Array.isArray(f.decorazioni_perle) ? f.decorazioni_perle : [f.decorazioni_perle];
+                    emailContent += `✨ Perle: ${perle.join(', ')}\n`;
+                }
+                if(f.decorazioni_fiori) {
+                    const fiori = Array.isArray(f.decorazioni_fiori) ? f.decorazioni_fiori : [f.decorazioni_fiori];
+                    emailContent += `🌸 Fiori: ${fiori.join(', ')}\n`;
+                }
+            }
+        } else if(item.type === 'pasticcini') {
+            emailContent += `Quantità (Pezzi): ${f.quantita || '-'}\n`;
+            if(f.specifiche) emailContent += `Specifiche Richieste: ${f.specifiche}\n`;
+        } else if(item.type === 'pizze') {
+            emailContent += `Pizze Ordinate:\n`;
+
+            // Gestisci array di pizze_tipo
+            const pizzeScelte = Array.isArray(f.pizze_tipo) ? f.pizze_tipo : (f.pizze_tipo ? [f.pizze_tipo] : []);
+
+            if (pizzeScelte.length > 0) {
+                pizzeScelte.forEach(pizza => {
+                    emailContent += `  • ${pizza}\n`;
+
+                    // Mostra la quantità corrispondente
+                    if (pizza.includes('Focaccine')) {
+                        const qty = f.qty_focaccine || '-';
+                        emailContent += `    Quantità: ${qty} cad\n`;
+                    } else if (pizza.includes('Teglia Focaccia')) {
+                        const qty = f.qty_focaccia || '-';
+                        emailContent += `    Quantità: ${qty} Teglie\n`;
+                    } else if (pizza.includes('Teglia Margherita')) {
+                        const qty = f.qty_margherita || '-';
+                        emailContent += `    Quantità: ${qty} Teglie\n`;
+                    } else if (pizza.includes('Panini')) {
+                        const qty = f.qty_panini || '-';
+                        emailContent += `    Quantità: ${qty} kg\n`;
+                    }
+                });
+            } else {
+                emailContent += `Nessuna pizza selezionata\n`;
+            }
+        } else if(item.type === 'brioche') {
+            emailContent += `Tipo Brioche: ${f.brioche_tipo || '-'}\n`;
+            emailContent += `Quantità (Kg): ${f.quantita || '-'}\n`;
+        } else if(item.type === 'pane') {
+            emailContent += `Tipo Pane: ${f.pane_tipo || '-'}\n`;
+            emailContent += `Quantità: ${f.quantita || '-'}\n`;
+        }
+
+        // Data e ora ritiro
+        const dataRitiro = f.data_ritiro;
+        let dataFormattata = '-';
+        if(dataRitiro) {
+            const [anno, mese, giorno] = dataRitiro.split('-');
+            dataFormattata = `${giorno}-${mese}-${anno}`;
+        }
+        emailContent += `Data Ritiro: ${dataFormattata}\n`;
+        emailContent += `Ora Ritiro: ${f.ora_ritiro || '-'}\n`;
+
+        if(f.note) emailContent += `Note Aggiuntive: ${f.note}\n`;
+        emailContent += `Allergie o Intolleranze: ${f.allergie || 'Nessuna'}\n\n`;
+    });
+
+    // Send email
+    sendFormToEmailJSCart(emailContent, fields, photoBase64, photoFilename, submitBtn, originalText);
+}
+
+function sendFormToEmailJSCart(emailContent, customerData, photoBase64, photoFilename, submitBtn, originalText) {
+    const emailParams = {
+        subject: `Nuova Prenotazione Multipla Pasticceria Andrea (${cart.length} ordini)`,
+        html_content: emailContent,
+        customer_email: customerData.email,
+        customer_name: customerData.nome
+    };
+
+    // Aggiungi foto se presente
+    if (photoBase64 && photoFilename) {
+        emailParams.photo_base64 = photoBase64;
+        emailParams.photo_filename = photoFilename;
+        console.log('📸 Foto inclusa nell\'email:', photoFilename);
+    }
+
+    // Show success message
+    const messageDiv = document.createElement('div');
+    messageDiv.innerHTML = 'Ordine inviato, Grazie Mille ❤️';
+    messageDiv.classList.add('form-message', 'success');
+    messageDiv.style.display = 'block';
+
+    document.getElementById('cart-section').insertBefore(messageDiv, document.getElementById('cart-items'));
+
+    // Scroll to message
+    setTimeout(() => {
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+
+    // Send email
+    fetch(getEmailEndpoint(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailParams)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('✅ Email inviata:', data);
+            // Clear cart and reset
+            cart = [];
+            updateCartUI();
+            // Reload page after 3 seconds
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        })
+        .catch(error => {
+            console.error('❌ Errore email:', error);
+            // 🔴 RIABILITA IL BOTTONE IN CASO DI ERRORE
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.textContent = originalText;
+            }
+            alert('Errore nell\'invio dell\'ordine. Riprova.');
+        });
+}
     </script>
 </body>
 </html>
