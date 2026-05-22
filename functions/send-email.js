@@ -93,16 +93,22 @@ exports.handler = async (event, context) => {
         const attachments = [];
 
         if (photo_base64 && photo_filename) {
-            // Estrarre il base64 dal data URL
-            const base64String = photo_base64.replace(/^data:image\/[^;]+;base64,/, '');
+            try {
+                // Estrarre il base64 dal data URL
+                const base64String = photo_base64.replace(/^data:image\/[^;]+;base64,/, '');
 
-            // Aggiungere la foto come attachment INLINE
-            attachments.push({
-                filename: photo_filename,
-                content: Buffer.from(base64String, 'base64'),
-                cid: 'photo_inline',
-                encoding: 'base64'
-            });
+                // Aggiungere la foto come attachment INLINE
+                attachments.push({
+                    filename: photo_filename,
+                    content: Buffer.from(base64String, 'base64'),
+                    cid: 'photo_inline',
+                    encoding: 'base64'
+                });
+                console.log('✅ Foto processata correttamente:', photo_filename);
+            } catch(photoError) {
+                console.error('⚠️ Errore nel processare la foto, continuo senza allegato:', photoError.message);
+                // Continuo senza l'allegato piuttosto che fallire completamente
+            }
         }
 
         // Email HTML template
@@ -230,13 +236,18 @@ exports.handler = async (event, context) => {
             }
         }
 
+        console.log('✅✅✅ SUCCESSO! Email inviata completamente.');
+        console.log('   MessageID:', info.messageId);
+        console.log('   Attached files:', attachments.length);
+
         return {
             statusCode: 200,
             headers: { 'Access-Control-Allow-Origin': '*' },
             body: JSON.stringify({
                 success: true,
                 message: 'Email inviata con successo',
-                messageId: info.messageId
+                messageId: info.messageId,
+                attachmentsCount: attachments.length
             })
         };
 
