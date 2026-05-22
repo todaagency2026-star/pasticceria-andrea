@@ -2818,42 +2818,6 @@ function updateCartUI() {
     cartSubmitBtn.style.display = 'block';
 }
 
-// Comprimi foto prima dell'invio
-function compressImage(file, callback) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            // Riduci le dimensioni: max 1200px di larghezza
-            let width = img.width;
-            let height = img.height;
-            const maxWidth = 1200;
-
-            if (width > maxWidth) {
-                height = Math.round((height * maxWidth) / width);
-                width = maxWidth;
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            // Comprimi con qualità 0.8 (buona qualità ma file più piccolo)
-            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-            console.log('📸 Foto compressa:', file.name, '- Original:', Math.round(e.target.result.length / 1024), 'KB → Compressed:', Math.round(compressedBase64.length / 1024), 'KB');
-            callback(compressedBase64);
-        };
-        img.onerror = function() {
-            console.error('Errore nel caricamento dell\'immagine');
-            callback(null);
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
 function submitFullCart() {
     if (cart.length === 0) {
         alert('Il carrello è vuoto!');
@@ -2886,11 +2850,15 @@ function submitFullCart() {
         }
     }
 
-    // Se c'è una foto, comprimi e convertila a base64
+    // Se c'è una foto, convertila a base64 (SENZA compressione - foto identica)
     if (hasPhoto && photoFile) {
-        compressImage(photoFile, function(compressedBase64) {
-            buildAndSendCartEmail(compressedBase64, photoFile.name, submitBtn, originalText);
-        });
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result;
+            console.log('📸 Foto convertita a base64:', photoFile.name, '- Size:', Math.round(base64Data.length / 1024), 'KB');
+            buildAndSendCartEmail(base64Data, photoFile.name, submitBtn, originalText);
+        };
+        reader.readAsDataURL(photoFile);
     } else {
         // Se non c'è foto, invia direttamente
         buildAndSendCartEmail(null, null, submitBtn, originalText);
