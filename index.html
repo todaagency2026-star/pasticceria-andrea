@@ -3034,9 +3034,11 @@ function sendFormToEmailJSCart(emailContent, customerData, photoBase64, photoFil
         const requestBody = JSON.stringify(emailParams);
         console.log('✅ Payload JSON creato:', Math.round(requestBody.length / 1024), 'KB');
 
-        // Create timeout promise (30 secondi per il telefono)
+        // Create timeout promise (60 secondi per il telefono con foto)
+        const timeoutMs = (photoBase64) ? 60000 : 30000; // 60s con foto, 30s senza
+        console.log('⏱️ Timeout impostato a:', timeoutMs / 1000, 'secondi');
         const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout - richiesta troppo lenta')), 30000)
+            setTimeout(() => reject(new Error('Timeout - richiesta troppo lenta')), timeoutMs)
         );
 
         // Send email con timeout
