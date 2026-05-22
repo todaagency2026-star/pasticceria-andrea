@@ -8,7 +8,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: 'andrea.panbar@gmail.com',
         pass: process.env.GMAIL_APP_PASSWORD || 'avmtmprjtbddlumd'
-    }
+    },
+    connectionTimeout: 10000,  // 10 secondi max per connettersi
+    socketTimeout: 10000       // 10 secondi max per socket
 });
 
 // Netlify Function per inviare email
@@ -28,23 +30,62 @@ exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
+            headers: { 'Access-Control-Allow-Origin': '*' },
             body: JSON.stringify({ error: 'Method not allowed' })
         };
     }
 
+    // Check payload size (max 5MB)
+    const payloadSize = event.body ? event.body.length : 0;
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (payloadSize > maxSize) {
+        console.error(`❌ Payload troppo grande: ${Math.round(payloadSize / 1024 / 1024)} MB`);
+        return {
+            statusCode: 413,
+            headers: { 'Access-Control-Allow-Origin': '*' },
+            body: JSON.stringify({
+                error: `Payload troppo grande (${Math.round(payloadSize / 1024 / 1024)} MB, max 5MB)`,
+                payloadSize: payloadSize
+            })
+        };
+    }
+
     try {
-        const { subject, html_content, photo_base64, photo_filename, customer_email, customer_name } = JSON.parse(event.body);
+        // Parse body
+        let emailData;
+        try {
+            emailData = JSON.parse(event.body);
+        } catch(parseError) {
+            console.error('❌ Errore nel parsing JSON:', parseError.message);
+            return {
+                statusCode: 400,
+                headers: { 'Access-Control-Allow-Origin': '*' },
+                body: JSON.stringify({ error: 'JSON malformato: ' + parseError.message })
+            };
+        }
+
+        const { subject, html_content, photo_base64, photo_filename, customer_email, customer_name } = emailData;
 
         console.log('📨 Email ricevuta:');
-        console.log('   Subject:', subject);
-        console.log('   Photo filename:', photo_filename);
-        console.log('   Customer email:', customer_email);
+        console.log('   Subject:', subject ? 'OK' : 'MANCANTE');
+        console.log('   HTML content:', html_content ? `OK (${html_content.length} chars)` : 'MANCANTE');
+        console.log('   Photo filename:', photo_filename || 'Nessuna');
+        console.log('   Photo size:', photo_base64 ? `${Math.round(photo_base64.length / 1024)} KB` : 'Nessuna');
+        console.log('   Customer email:', customer_email || 'Nessuna');
+        console.log('   Payload size totale:', Math.round(event.body.length / 1024), 'KB');
 
         if (!subject || !html_content) {
             return {
                 statusCode: 400,
                 headers: { 'Access-Control-Allow-Origin': '*' },
-                body: JSON.stringify({ error: 'Subject e html_content sono obbligatori' })
+                body: JSON.stringify({
+                    error: 'Subject e html_content sono obbligatori',
+                    receivedFields: {
+                        subject: !!subject,
+                        html_content: !!html_content
+                    }
+                })
             };
         }
 
