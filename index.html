@@ -2818,6 +2818,85 @@ function updateCartUI() {
     cartSubmitBtn.style.display = 'block';
 }
 
+// Funzione per comprimere immagine usando Canvas
+function compressImage(file, maxSizeKB = 3000) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+
+            img.onload = function() {
+                let quality = 0.85; // Qualità iniziale 85%
+                let base64Result = e.target.result;
+
+                // Se l'immagine non è troppo grande, usa l'originale
+                if (e.target.result.length / 1024 <= maxSizeKB) {
+                    console.log('📸 Foto OK, dimensione:', Math.round(e.target.result.length / 1024), 'KB (sotto', maxSizeKB, 'KB)');
+                    resolve(e.target.result);
+                    return;
+                }
+
+                console.log('📸 Foto grande:', Math.round(e.target.result.length / 1024), 'KB, comprimo...');
+
+                // Crea canvas e disegna l'immagine
+                const canvas = document.createElement('canvas');
+                const maxWidth = 1920;
+                const maxHeight = 1920;
+                let width = img.width;
+                let height = img.height;
+
+                // Ridimensiona se necessario
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Comprimi fino a raggiungere la dimensione target
+                let attempts = 0;
+                while (canvas.toDataURL('image/jpeg', quality).length / 1024 > maxSizeKB && attempts < 10) {
+                    quality -= 0.05;
+                    attempts++;
+                }
+
+                base64Result = canvas.toDataURL('image/jpeg', Math.max(quality, 0.6));
+                console.log('✅ Foto compressa - Qualità:', Math.round(quality * 100) + '%', 'Size:', Math.round(base64Result.length / 1024), 'KB');
+                resolve(base64Result);
+            };
+
+            img.onerror = function() {
+                console.error('❌ Errore nel caricare l\'immagine');
+                reject(new Error('Errore nel caricare l\'immagine'));
+            };
+        };
+
+        reader.onerror = function(error) {
+            console.error('❌ Errore nel leggere la foto:', error);
+            reject(error);
+        };
+
+        try {
+            reader.readAsDataURL(file);
+        } catch(error) {
+            console.error('❌ Errore nell\'avviare lettura foto:', error);
+            reject(error);
+        }
+    });
+}
+
 function submitFullCart() {
     if (cart.length === 0) {
         alert('Il carrello è vuoto!');
@@ -2845,34 +2924,29 @@ function submitFullCart() {
         if (item.photoFile) {
             photoFile = item.photoFile;
             hasPhoto = true;
-            console.log('📸 Foto trovata nel carrello:', photoFile.name);
+            console.log('📸 Foto trovata nel carrello:', photoFile.name, 'Size:', photoFile.size, 'bytes');
             break;
         }
     }
 
-    // Se c'è una foto, convertila a base64 (SENZA compressione - foto identica)
+    // Se c'è una foto, comprimila e convertila a base64
     if (hasPhoto && photoFile) {
-        console.log('📸 Inizio conversione foto a base64...', photoFile.name, 'Size:', photoFile.size, 'bytes');
-        const reader = new FileReader();
+        console.log('📸 Inizio elaborazione foto (compressione se necessaria)...');
 
-        reader.onerror = function(error) {
-            console.error('❌ Errore nel leggere la foto:', error);
-            // Se fallisce la lettura foto, invia comunque l'ordine senza foto
-            buildAndSendCartEmail(null, null, submitBtn, originalText);
-        };
-
-        reader.onload = function(e) {
-            const base64Data = e.target.result;
-            console.log('✅ Foto convertita a base64:', photoFile.name, '- Size:', Math.round(base64Data.length / 1024), 'KB');
-            buildAndSendCartEmail(base64Data, photoFile.name, submitBtn, originalText);
-        };
-
-        try {
-            reader.readAsDataURL(photoFile);
-        } catch(error) {
-            console.error('❌ Errore nell\'avviare lettura foto:', error);
-            buildAndSendCartEmail(null, null, submitBtn, originalText);
-        }
+        compressImage(photoFile, 3000) // Max 3MB per la foto compressa
+            .then(base64Data => {
+                console.log('✅ Foto pronta per l\'invio:', Math.round(base64Data.length / 1024), 'KB');
+                buildAndSendCartEmail(base64Data, photoFile.name, submitBtn, originalText);
+            })
+            .catch(error => {
+                console.error('❌ Errore nell\'elaborare la foto:', error.message);
+                alert('Errore nell\'elaborare la foto. Riprova con un\'immagine diversa.');
+                // Riabilita il bottone
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.textContent = originalText;
+            });
     } else {
         // Se non c'è foto, invia direttamente
         console.log('📧 Nessuna foto - invio ordine direttamente');
