@@ -3009,12 +3009,9 @@ function submitFullCart() {
             })
             .catch(error => {
                 console.error('❌ Errore nell\'elaborare la foto:', error.message);
-                alert('Errore nell\'elaborare la foto. Riprova con un\'immagine diversa.');
-                // Riabilita il bottone
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                submitBtn.style.cursor = 'pointer';
-                submitBtn.textContent = originalText;
+                console.warn('⚠️ Continuo senza foto - invio ordine lo stesso');
+                // Fallback: invia ordine SENZA foto se la compressione fallisce
+                buildAndSendCartEmail(null, null, submitBtn, originalText);
             });
     } else {
         // Se non c'è foto, invia direttamente
