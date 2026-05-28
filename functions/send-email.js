@@ -163,7 +163,7 @@ exports.handler = async (event, context) => {
             info = await transporter.sendMail({
                 from: 'Pasticceria Andrea <andrea.panbar@gmail.com>',
                 to: 'andrea.panbar@gmail.com',
-                subject: `[ORDINE SITO] ${customer_name || 'Cliente'} - ${subject}`,
+                subject: `✅ [ORDINE SITO] ${customer_name || 'Cliente'} - ${subject}`,
                 text: html_content.replace(/<[^>]*>/g, ''),
                 html: emailHTML,
                 replyTo: 'andrea.panbar@gmail.com',

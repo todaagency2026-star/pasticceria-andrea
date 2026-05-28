@@ -1748,7 +1748,12 @@ footer{
                             <span style="flex: 1;">Teglia Focaccia <strong>€ 13,00</strong></span>
                         </label>
                         <div id="qty-focaccia" style="display: none; margin-top: 10px; padding-left: 30px;">
-                            <input type="number" name="qty_focaccia" min="1" placeholder="Quantità (Teglie)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <input type="number" name="qty_focaccia" min="1" placeholder="Quantità (Teglie)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px;">
+                            <select name="focaccia_tipo" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Scegli: Intere o Tagliate *</option>
+                                <option value="Intere">Intere</option>
+                                <option value="Tagliate">Tagliate</option>
+                            </select>
                         </div>
                     </div>
 
@@ -1759,7 +1764,12 @@ footer{
                             <span style="flex: 1;">Teglia Margherita <strong>€ 18,00</strong></span>
                         </label>
                         <div id="qty-margherita" style="display: none; margin-top: 10px; padding-left: 30px;">
-                            <input type="number" name="qty_margherita" min="1" placeholder="Quantità (Teglie)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <input type="number" name="qty_margherita" min="1" placeholder="Quantità (Teglie)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px;">
+                            <select name="margherita_tipo" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Scegli: Intere o Tagliate *</option>
+                                <option value="Intere">Intere</option>
+                                <option value="Tagliate">Tagliate</option>
+                            </select>
                         </div>
                     </div>
 
@@ -3103,9 +3113,13 @@ function buildAndSendCartEmail(photoBase64, photoFilename, submitBtn, originalTe
                     } else if (pizza.includes('Teglia Focaccia')) {
                         const qty = f.qty_focaccia || '-';
                         emailContent += `    Quantità: ${qty} Teglie\n`;
+                        const tipo = f.focaccia_tipo || '-';
+                        emailContent += `    Tipo: ${tipo}\n`;
                     } else if (pizza.includes('Teglia Margherita')) {
                         const qty = f.qty_margherita || '-';
                         emailContent += `    Quantità: ${qty} Teglie\n`;
+                        const tipo = f.margherita_tipo || '-';
+                        emailContent += `    Tipo: ${tipo}\n`;
                     } else if (pizza.includes('Panini')) {
                         const qty = f.qty_panini || '-';
                         emailContent += `    Quantità: ${qty} kg\n`;
