@@ -1,5 +1,9 @@
 const nodemailer = require('nodemailer');
 
+const SHOP_EMAIL = process.env.EMAIL_RECIPIENT || 'andrea.panbar@gmail.com';
+
+const escapeHtml = (text) => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 // Configurare Nodemailer per Gmail con SMTP diretto
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -7,7 +11,7 @@ const transporter = nodemailer.createTransport({
     secure: false,
     auth: {
         user: 'andrea.panbar@gmail.com',
-        pass: process.env.GMAIL_APP_PASSWORD || 'avmtmprjtbddlumd'
+        pass: process.env.GMAIL_APP_PASSWORD
     },
     connectionTimeout: 10000,  // 10 secondi max per connettersi
     socketTimeout: 10000       // 10 secondi max per socket
@@ -65,7 +69,10 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const { subject, html_content, photo_base64, photo_filename, customer_email, customer_name } = emailData;
+        const { subject, html_content, photo_base64, customer_email, customer_name } = emailData;
+        const photo_filename = emailData.photo_filename ? escapeHtml(emailData.photo_filename) : emailData.photo_filename;
+        const safeContent = html_content ? escapeHtml(html_content) : html_content;
+        const safeName = escapeHtml(customer_name || 'Cliente');
 
         console.log('📨 Email ricevuta:');
         console.log('   Subject:', subject ? 'OK' : 'MANCANTE');
@@ -137,7 +144,7 @@ exports.handler = async (event, context) => {
                         <p>Nuova Prenotazione Ricevuta</p>
                     </div>
                     <div class="content">
-                        <pre>${html_content}</pre>
+                        <pre>${safeContent}</pre>
                         ${photo_base64 && photo_filename ? `
                         <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
                         <div style="margin-top: 30px; text-align: center;">
@@ -162,11 +169,11 @@ exports.handler = async (event, context) => {
         try {
             info = await transporter.sendMail({
                 from: 'Pasticceria Andrea <andrea.panbar@gmail.com>',
-                to: 'andrea.panbar@gmail.com',
+                to: SHOP_EMAIL,
                 subject: `✅ [ORDINE SITO] ${customer_name || 'Cliente'} - ${subject}`,
-                text: html_content.replace(/<[^>]*>/g, ''),
+                text: html_content,
                 html: emailHTML,
-                replyTo: 'andrea.panbar@gmail.com',
+                replyTo: customer_email || SHOP_EMAIL,
                 attachments: attachments
             });
             console.log('✅ Email inviata alla pasticceria:', info.messageId);
@@ -199,7 +206,7 @@ exports.handler = async (event, context) => {
                         <p>Grazie per il tuo ordine!</p>
                     </div>
                     <div class="content">
-                        <p>Ciao ${customer_name || 'Cliente'},</p>
+                        <p>Ciao ${safeName},</p>
                         <div class="success-message">
                             <h2 style="margin: 0; color: #2e7d32;">✅ Ordine Confermato</h2>
                             <p style="margin: 10px 0 0 0;">Il tuo ordine è stato ricevuto correttamente!</p>
@@ -208,7 +215,7 @@ exports.handler = async (event, context) => {
                         <p><strong>Ti contatteremo al numero di telefono fornito per qualsiasi conferma o aggiornamento.</strong></p>
                         <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
                         <p><strong>Dettagli Ordine:</strong></p>
-                        <pre style="background: #f5f0eb; padding: 15px; border-radius: 5px; overflow-x: auto;">${html_content}</pre>
+                        <pre style="background: #f5f0eb; padding: 15px; border-radius: 5px; overflow-x: auto;">${safeContent}</pre>
                     </div>
                     <div class="footer">
                         <p>© 2026 Pasticceria Andrea | Via Stalingrado, 14 - Cinisello Balsamo (MI)</p>
